@@ -1,0 +1,9 @@
+@backend_HostAddress = http://localhost:8080
+
+GET {{backend_HostAddress}}/api/resultados/ultimos
+
+###
+POST {{backend_HostAddress}}/api/resultados
+Accept: application/json
+
+###
