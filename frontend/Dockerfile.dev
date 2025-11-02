@@ -1,0 +1,21 @@
+# Usa uma imagem Node para rodar o Angular CLI
+FROM node:lts-alpine AS angular-dev
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia package.json e instala dependências
+# Otimiza o cache, pois dependências raramente mudam
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copia o restante da aplicação
+COPY . .
+
+# Porta padrão do servidor de desenvolvimento Angular
+EXPOSE 4200
+
+# Comando para iniciar o servidor de desenvolvimento com Hot Reload
+# --host 0.0.0.0: Permite acesso externo ao container
+# --disable-host-check: Necessário quando acessado via IP ou proxy (Nginx)
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0"]
