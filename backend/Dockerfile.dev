@@ -1,0 +1,48 @@
+# Estágio de desenvolvimento: Usa o SDK mais recente.
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
+
+RUN apt-get update && apt-get install -y --no-install-recommends unzip wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /vsdbg \
+    && wget -q https://aka.ms/getvsdbgsh -O /tmp/getvsdbg.sh \
+    && bash /tmp/getvsdbg.sh -v latest -l /vsdbg \
+    && rm /tmp/getvsdbg.sh
+
+# Configuração do ambiente para desenvolvimento e debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_ENABLE_DEBUGGING=true
+# Porta padrão do Debugger (Pode ser alterada para evitar conflitos)
+ENV DOTNET_SYSTEM_NET_SOCKETS_BLOCKINGCONNECT=true
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+
+# Porta da Aplicação
+EXPOSE 8080
+# Porta de Debug (Padrão sugerido para C# remote debugging)
+EXPOSE 8000
+
+# Define o diretório de trabalho principal dentro do container (onde o projeto principal reside)
+# O WORKDIR deve apontar para onde você quer que o comando de run inicie.
+WORKDIR /app
+
+# --- Etapa 1: Restauração de dependências otimizada por cache ---
+
+# Copia os arquivos .csproj. O caminho de origem é relativo ao Dockerfile.
+# Assumindo que seu Dockerfile está na raiz, e o .csproj em src/.
+COPY src/*.csproj .
+RUN dotnet restore
+
+# --- Etapa 2: Copia o restante da aplicação para o Hot Reload ---
+
+# Copia todo o restante do código-fonte e projetos do contexto para /app
+# O 'dotnet watch run' irá monitorar alterações em todo este diretório.
+WORKDIR /app
+COPY . .
+
+# --- Etapa 3: Comando de entrada com Hot Reload e projeto específico ---
+
+# Define o WORKDIR de volta para a pasta do projeto principal para o ENTRYPOINT
+WORKDIR /app
+
+# Comando de entrada: usa 'dotnet watch run' para Hot Reload
+# --project: Especifica qual projeto deve ser executado.
+ENTRYPOINT ["dotnet", "watch", "--project", "/app/backend.csproj", "run", "--urls", "http://0.0.0.0:8080", "--non-interactive"]

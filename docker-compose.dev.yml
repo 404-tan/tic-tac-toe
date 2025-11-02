@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres
+    container_name: postgres_dev
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: tictactoe
+    networks:
+      - dev-net
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: aspnetcore_backend_dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=postgres_dev;Database=tictactoe;User Id=devuser;Password=devpassword;"
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/app
+      - /app/obj
+      - /root/.nuget/packages:/root/.nuget/packages # Cache de pacotes
+    depends_on:
+      - db
+    networks:
+      - dev-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev 
+    container_name: angular_dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - dev-net
+
+  
+networks:
+  dev-net:
+    driver: bridge
