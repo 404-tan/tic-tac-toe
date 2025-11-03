@@ -1,5 +1,5 @@
 <div class="tictactoe">
-  @for (square of squares(); track square; let idx = $index) {
+  @for (square of squares();track $index;let idx = $index) {
     <div
       class="square"
       (click)="handleMove(idx)"

@@ -27,7 +27,9 @@ export class Tictactoe {
   xIsNext = signal(true);
   oIsNext = computed(() => !this.xIsNext());
   gameIsFinished = computed(() => {
-    return this.winner() !== null || this.squares().every(square => square !== '');
+    const hasWinner = this.winner() !== null;
+    const isBoardFull = this.squares().every(square => square !== '');
+    return hasWinner || isBoardFull;
   });
   winner = signal<string | null>(null);
   constructor() {}
@@ -39,12 +41,16 @@ export class Tictactoe {
       return;
     }
     const currentSquares = this.squares();
-    if (currentSquares[index] === '') {
-      currentSquares[index] = this.player;
-      this.squares.set(currentSquares);
-      this.checkForWinner();
-      this.xIsNext.set(!this.xIsNext());
-    }
+    if (currentSquares[index] !== '') return;
+    currentSquares[index] = this.player;
+    // Atualiza o Signal com uma nova cópia do array para que o compute funcione corretamente
+    this.squares.update(currentSquares => {
+        const newSquares = [...currentSquares];
+        newSquares[index] = this.player;
+        return newSquares;
+    });
+    this.checkForWinner();
+    this.xIsNext.set(!this.xIsNext());
   }
   checkForWinner() {
     for (const condition of this.winConditions) {
