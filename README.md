@@ -30,3 +30,7 @@ Antes de executar, se você fez alterações no `Dockerfile.dev` ou nos arquivos
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d --build
+```
+### 2. Acessar as páginas:
+- Frontend: http://localhost:4200
+- API: http://localhost:8080
