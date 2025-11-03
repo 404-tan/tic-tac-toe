@@ -12,35 +12,43 @@ builder.Services.AddScoped<IResultadoRepository, TicTacToe.Backend.Infra.Persist
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+});
 builder.Services.AddDbContext<TicTacToeContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseCors("CorsPolicy");
     using var scope = app.Services.CreateScope();
     await DataSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.UseHttpsRedirection();
 
-
 app.MapGet("/api/resultados/ultimos", async (IResultadoService resultadoService) =>
 {
     try
     {
-        // O resultadoService agora é injetado pelo runtime, que garante o escopo correto.
         var response = await resultadoService.GetUltimosVencedoresAsync();
         return Results.Ok(response);
     }
     catch (Exception)
     {
-        // Em um cenário real, você deve logar o erro aqui.
         return Results.StatusCode(500);
     }
 })
