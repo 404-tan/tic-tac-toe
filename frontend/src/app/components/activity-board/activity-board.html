@@ -1,1 +1,14 @@
-<p>activity-board works!</p>
+<div class="activity-board">
+  <h2>Últimos Vencedores</h2>
+  <div class="winners-list">
+    @for (resultado of resultadosRecentes.value()?.ultimosVencedores;track $index; let i = $index) {
+      <div class="winner-entry">
+        <span class="player">{{ resultado.vencedor }}</span>
+        <span class="timestamp">{{ resultado.dataPartida | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+      </div>
+    }
+    @empty {
+      <div class="no-winners">Nenhum vencedor encontrado</div>
+    }
+  </div>
+</div>

@@ -1,0 +1,80 @@
+.tictactoe {
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
+  gap: 5px;
+}
+
+.square {
+  width: calc(33.33% - 5px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+}
+
+.square.x {
+  color: #ff4081;
+}
+
+.square.o {
+  color: #3f51b5;
+}
+
+.status {
+  width: 100%;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+.reset-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 1rem;
+  font-size: 1rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.dialog h2 {
+  margin: 0 0 1rem 0;
+}
+
+.dialog button {
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}

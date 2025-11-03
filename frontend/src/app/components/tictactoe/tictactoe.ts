@@ -1,13 +1,19 @@
-import { Component, signal } from '@angular/core';
+import { ResultadoService } from './../../services/resultado.service';
+import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { ResultadoNotificationService } from '../../services/resultado-notification.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tictactoe',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './tictactoe.html',
   styleUrl: './tictactoe.css',
 })
 export class Tictactoe {
-  squares = signal(Array(9).fill(''));
+  private resultadoService = inject(ResultadoService);
+  private notificationService = inject(ResultadoNotificationService);
+  squares = signal(Array<string>(9).fill(''));
   winConditions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -18,4 +24,67 @@ export class Tictactoe {
     [0, 4, 8],
     [2, 4, 6]
   ]
+  xIsNext = signal(true);
+  oIsNext = computed(() => !this.xIsNext());
+  gameIsFinished = computed(() => {
+    return this.winner() !== null || this.squares().every(square => square !== '');
+  });
+  winner = signal<string | null>(null);
+  constructor() {}
+  get player() {
+    return this.xIsNext() ? 'X' : 'O';
+  }
+  handleMove(index: number) {
+    if (index > 8 || index < 0 || this.winner()) {
+      return;
+    }
+    const currentSquares = this.squares();
+    if (currentSquares[index] === '') {
+      currentSquares[index] = this.player;
+      this.squares.set(currentSquares);
+      this.checkForWinner();
+      this.xIsNext.set(!this.xIsNext());
+    }
+  }
+  checkForWinner() {
+    for (const condition of this.winConditions) {
+      const [a, b, c] = condition;
+      const currentSquares = this.squares();
+      if(
+        currentSquares[a] === this.player &&
+        currentSquares[a] === currentSquares[b] &&
+        currentSquares[a] === currentSquares[c]
+      ) {
+        this.winner.set(this.player);
+        this.sendResult(this.player);
+        return;
+      }
+    }
+    if (this.squares().every(square => square !== '')) {
+      this.winner.set(null);
+      this.sendResult('E');
+      return;
+    }
+  }
+  reloadActivityBoard() {
+    this.notificationService.notificarNovoResultado();
+  }
+  resetGame() {
+    this.squares.set(Array<string>(9).fill(''));
+    this.winner.set(null);
+    this.xIsNext.set(true);
+  }
+  sendResult(vencedor: string){
+    this.resultadoService.postResultado(vencedor)
+    .subscribe({
+        next: (res) => {
+          alert(`Resultado salvo!`);
+          this.reloadActivityBoard();
+        },
+        error: (err) => {
+            alert(`Erro ao salvar resultado: ${err.message}`);
+        }
+      }
+    );
+  }
 }

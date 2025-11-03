@@ -1,0 +1,43 @@
+.activity-board {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  backdrop-filter: blur(5px);
+}
+
+h2 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.winners-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.winner-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.player {
+  font-weight: bold;
+}
+
+.timestamp {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.no-winners {
+  text-align: center;
+  color: #aaa;
+  padding: 20px 0;
+}

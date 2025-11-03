@@ -1,0 +1,33 @@
+<div class="tictactoe">
+  @for (square of squares(); track square; let idx = $index) {
+    <div
+      class="square"
+      (click)="handleMove(idx)"
+      [class.x]="square === 'X'"
+      [class.o]="square === 'O'"
+    >
+      {{ square }}
+    </div>
+  }
+  <div class="status">
+    @if (!winner()) {
+      <p>Jogador atual: {{ player }}</p>
+    } @else {
+      <p>Vencedor: {{ winner() }}!</p>
+    }
+  </div>
+  <button class="reset-button" (click)="resetGame()">Reiniciar Jogo</button>
+</div>
+
+@if (gameIsFinished()) {
+  <div class="overlay">
+    <div class="dialog">
+      <h2>Fim de Jogo!</h2>
+      @if(winner())
+      {<p>Jogador {{ winner() }} venceu!</p>}
+      @else
+      {<p>Empate!</p>}
+      <button (click)="resetGame()">Jogar Novamente</button>
+    </div>
+  </div>
+}
