@@ -16,7 +16,7 @@ public class TicTacToeContext(DbContextOptions<TicTacToeContext> options) : DbCo
             entity.ToTable("Resultados");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Vencedor).IsRequired();
-            entity.Property(e => e.DataHora).IsRequired();
+            entity.Property(e => e.DataHora).HasColumnType("timestamp with time zone").IsRequired();
         });
     }
 }

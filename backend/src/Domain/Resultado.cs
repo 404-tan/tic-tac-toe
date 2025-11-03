@@ -12,6 +12,6 @@ public class Resultado(string vencedor, DateTime dataHora)
     public int Id { get; }
     [Column(TypeName = "character varying(1)")]
     public string Vencedor { get; init; } = vencedor;
-    [Column(TypeName = "timestamp")]
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime DataHora { get; init; } = dataHora;
 }
